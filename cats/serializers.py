@@ -31,11 +31,14 @@ class AchievementSerializer(serializers.ModelSerializer):
 
 class Base64ImageField(serializers.ImageField):
     def to_internal_value(self, data):
-        if isinstance(data, str) and data.startswith('data:image'):
-            format, imgstr = data.split(';base64,')
-            ext = format.split('/')[-1]
-
-            data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
+        # ...начинаем декодировать изображение из base64.
+        # Сначала нужно разделить строку на части.
+        format, imgstr = data.split(';base64,')
+        # И извлечь расширение файла.
+        ext = format.split('/')[-1]
+        # Затем декодировать сами данные и поместить результат в файл,
+        # которому дать название по шаблону.
+        data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
 
         return super().to_internal_value(data)
 
